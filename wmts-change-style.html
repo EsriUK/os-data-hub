@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        OS Maps API | Change Style Example | ArcGIS API for JavaScript
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        #layerToggle {
+            top: 20px;
+            right: 20px;
+            position: absolute;
+            z-index: 99;
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px;
+            opacity: 0.85;
+        }
+
+        #layerToggle input[type='radio'] {
+            margin-top: -1px;
+            vertical-align: middle;
+        }
+
+        #layerToggle label {
+            margin-right: 8px;
+        }
+
+        .esri-view .esri-view-surface--inset-outline:focus::after {
+            outline: 0 !important;
+        }
+
+        .esri-ui .esri-attribution {
+            display: none;
+        }
+    </style>
+    <script src="https://js.arcgis.com/4.15/"></script>
+    <script>
+        var apiKey = 'INSERT_API_KEY_HERE';
+        var serviceUrl = 'https://api.os.uk/maps/raster/v1/wmts';
+        var map, view;
+
+        require([
+            'esri/Map',
+            'esri/views/MapView',
+            'esri/layers/WMTSLayer',
+            'esri/geometry/Point',
+            'esri/geometry/SpatialReference',
+            'esri/core/watchUtils',
+            'dojo/domReady!'
+        ], function (
+            Map,
+            MapView,
+            WMTSLayer,
+            Point,
+            SpatialReference,
+            watchUtils
+        ) {
+            var tileLayer = new WMTSLayer({
+                url: serviceUrl,
+                serviceMode: 'KVP',
+                activeLayer: {
+                    id: 'Light_27700'
+                },
+                customParameters: {
+                    key: apiKey
+                }
+            });
+
+            map = new Map({
+                layers: [tileLayer]
+            });
+
+            view = new MapView({
+                container: 'viewDiv',
+                map: map,
+                scale: 15392,
+                center: new Point({
+                    x: 325920,
+                    y: 673875,
+                    spatialReference: new SpatialReference({ wkid: 27700 })
+                }),
+                constraints: {
+                    minScale: 3386450,
+                    maxScale: 6614,
+                    rotationEnabled: false
+                }
+            });
+
+            // Add an 'onclick' handler for the radio buttons.
+            var layerList = document.getElementById('layerToggle');
+            var inputs = layerList.getElementsByTagName('input');
+
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].onclick = switchLayer;
+            }
+
+            /**
+             * Change the map style.
+             * @param {string} layer - The layer name to add.
+             */
+            function switchLayer(layer) {
+                var layerId = layer.target.id;
+                tileLayer.activeLayer.id = layerId + '_27700';
+                tileLayer.refresh();
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+    <span id="layerToggle" class="esri-widget">
+        <input id="Light" type="radio" name="toggle" value="Light" checked="checked" />
+        <label for="Light">Light</label>
+        <input id="Outdoor" type="radio" name="toggle" value="Outdoor" />
+        <label for="Outdoor">Outdoor</label>
+        <input id="Road" type="radio" name="toggle" value="Road" />
+        <label for="Road">Road</label>
+        <input id="Leisure" type="radio" name="toggle" value="Leisure" />
+        <label for="Leisure">Leisure</label>
+    </span>
+</body>
+
+</html>
