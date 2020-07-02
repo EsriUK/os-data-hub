@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        OS Features API | Hospital within BBOX | ArcGIS API for JavaScript
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+
+        .esri-view .esri-view-surface--inset-outline:focus::after {
+            outline: 0 !important;
+        }
+
+        .esri-ui .esri-attribution {
+            display: none;
+        }
+    </style>
+    <script src="https://js.arcgis.com/4.15/"></script>
+    <script>
+        var apiKey = 'INSERT_API_KEY_HERE';
+        var wfsServiceUrl = 'https://api.os.uk/features/v1/wfs',
+            tileServiceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+
+        var map, view;
+
+        require([
+            'esri/Map',
+            'esri/views/MapView',
+            'esri/layers/WebTileLayer',
+            'esri/core/watchUtils',
+            'esri/Graphic',
+            'esri/request',
+            'dojo/domReady!'
+        ], function (
+            Map,
+            MapView,
+            WebTileLayer,
+            watchUtils,
+            Graphic,
+            esriRequest
+        ) {
+            var tileLayer = new WebTileLayer({
+                urlTemplate:
+                    tileServiceUrl +
+                    '/Light_3857/{level}/{col}/{row}.png?key=' +
+                    apiKey
+            });
+
+            map = new Map({
+                layers: [tileLayer]
+            });
+
+            view = new MapView({
+                container: 'viewDiv',
+                map: map,
+                zoom: 14,
+                center: [-0.111, 51.509],
+                constraints: {
+                    minZoom: 10,
+                    maxZoom: 16,
+                    rotationEnabled: false
+                }
+            });
+
+            watchUtils.whenTrue(view, 'stationary', function () {
+                if (view.extent) {
+                    console.log(view.extent);
+                    getFeatures(view.extent).then(function (geoJson) {
+                        var graphics = geoJson.data.features.map(function (
+                            f
+                        ) {
+                            var polygon = {
+                                type: 'polygon',
+                                rings: f.geometry.coordinates
+                            };
+
+                            var fillSymbol = {
+                                type: 'simple-fill',
+                                color: [51, 136, 255, 0.5],
+                                outline: {
+                                    color: [51, 136, 255],
+                                    width: 1
+                                }
+                            };
+
+                            return new Graphic({
+                                geometry: polygon,
+                                attributes: f.properties,
+                                symbol: fillSymbol,
+                                popupTemplate: {
+                                    title: '{DistinctiveName1}'
+                                }
+                            });
+                        });
+
+                        view.graphics.removeAll();
+                        view.graphics.addMany(graphics);
+                    });
+                }
+            });
+
+            /**
+             * Get features from the WFS.
+             */
+            function getFeatures(extent) {
+                // Convert the bounds to a formatted string.
+                var sw = extent.xmin + ',' + extent.ymin,
+                    ne = extent.xmax + ',' + extent.ymax;
+
+                var coords = sw + ' ' + ne;
+
+                // Create an OGC XML filter parameter value which will select the Hospital
+                // features (site function) intersecting the BBOX coordinates.
+                var xml = '<ogc:Filter>';
+                xml += '<ogc:And>';
+                xml += '<ogc:BBOX>';
+                xml += '<ogc:PropertyName>SHAPE</ogc:PropertyName>';
+                xml += '<gml:Box srsName="urn:ogc:def:crs:EPSG::3857">';
+                xml += '<gml:coordinates>' + coords + '</gml:coordinates>';
+                xml += '</gml:Box>';
+                xml += '</ogc:BBOX>';
+                xml += '<ogc:PropertyIsEqualTo>';
+                xml += '<ogc:PropertyName>SiteFunction</ogc:PropertyName>';
+                xml += '<ogc:Literal>Hospital</ogc:Literal>';
+                xml += '</ogc:PropertyIsEqualTo>';
+                xml += '</ogc:And>';
+                xml += '</ogc:Filter>';
+
+                // Define (WFS) parameters object.
+                var wfsParams = {
+                    key: apiKey,
+                    service: 'WFS',
+                    request: 'GetFeature',
+                    version: '2.0.0',
+                    typeNames: 'Sites_FunctionalSite',
+                    outputFormat: 'GEOJSON',
+                    srsName: 'urn:ogc:def:crs:EPSG::4326',
+                    filter: xml
+                };
+
+                var options = {
+                    query: {
+                        f: 'json'
+                    },
+                    responseType: 'json'
+                };
+
+                var url = getUrl(wfsParams);
+
+                return esriRequest(url, options).then(function (response) {
+                    return response;
+                });
+            }
+        });
+
+        /**
+         * Return URL with encoded parameters.
+         * @param {object} params - The parameters object to be encoded.
+         */
+        function getUrl(params) {
+            var encodedParameters = Object.keys(params)
+                .map(
+                    (paramName) =>
+                        paramName + '=' + encodeURI(params[paramName])
+                )
+                .join('&');
+            return wfsServiceUrl + '?' + encodedParameters;
+        }
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>

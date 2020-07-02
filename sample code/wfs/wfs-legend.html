@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        OS Features API | Classify Sites Using Smart Mapping | ArcGIS API
+        for JavaScript
+    </title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <link rel="stylesheet" href="https://js.arcgis.com/4.15/esri/themes/light/main.css" />
+    <style>
+        html,
+        body,
+        #viewDiv {
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+    <script src="https://js.arcgis.com/4.15/"></script>
+    <script>
+        var apiKey = 'INSERT_API_KEY_HERE';
+        var wfsServiceUrl = 'https://api.os.uk/features/v1/wfs';
+        var tileServiceUrl = 'https://api.os.uk/maps/raster/v1/zxy';
+        var map, view;
+
+        require([
+            'esri/Map',
+            'esri/views/MapView',
+            'esri/layers/GeoJSONLayer',
+            'esri/request',
+            'esri/core/watchUtils',
+            'esri/widgets/Legend',
+            'esri/renderers/smartMapping/creators/type',
+            'esri/widgets/BasemapToggle',
+            'dojo/domReady!'
+        ], function (
+            Map,
+            MapView,
+            GeoJSONLayer,
+            esriRequest,
+            watchUtils,
+            Legend,
+            creator,
+            BasemapToggle
+        ) {
+            map = new Map({ basemap: 'gray' });
+
+            view = new MapView({
+                container: 'viewDiv',
+                map: map,
+                center: [-3.189, 55.952],
+                zoom: 14,
+                constraints: {
+                    minZoom: 12,
+                    maxZoom: 14,
+                    rotationEnabled: false
+                }
+            });
+            const basemapToggle = new BasemapToggle({
+                view: view,
+                nextBasemap: 'dark-gray'
+            });
+            view.ui.add(basemapToggle, {
+                position: 'bottom-right'
+            });
+            basemapToggle.on('toggle', generateRenderer);
+            const legendWidget = new Legend({
+                view: view
+            });
+            view.ui.add(legendWidget, {
+                position: 'top-right'
+            });
+
+            function generateRenderer(layer) {
+                return creator
+                    .createRenderer({
+                        view: view,
+                        layer: layer,
+                        field: 'SiteFunction',
+                        numTypes: -1
+                    })
+                    .then(function (response) {
+                        return response.renderer;
+                    });
+            }
+
+            var activeLayer;
+            view.when(function () {
+                watchUtils.whenTrue(view, 'stationary', function () {
+                    getLayerUrl(view.extent).then((url) => {
+                        if (activeLayer !== undefined)
+                            map.remove(activeLayer);
+                        activeLayer = new GeoJSONLayer({
+                            title: 'Sites',
+                            url: url,
+                            popupTemplate: {
+                                title: '{DistinctiveName1}'
+                            },
+                            opacity: 0.7
+                        });
+                        generateRenderer(activeLayer).then(function (
+                            renderer
+                        ) {
+                            activeLayer.renderer = renderer;
+                            map.add(activeLayer);
+                        });
+                    });
+                });
+            });
+
+            /**
+             * Get the features as a URL blob.
+             */
+            function getLayerUrl(extent) {
+                // Convert the bounds to a formatted string.
+                var sw = extent.xmin + ',' + extent.ymin,
+                    ne = extent.xmax + ',' + extent.ymax;
+
+                var coords = sw + ' ' + ne;
+
+                // Create an OGC XML filter parameter value which will select the
+                // features (site function) intersecting the BBOX coordinates.
+                var xml = '<ogc:Filter>';
+                xml += '<ogc:BBOX>';
+                xml += '<ogc:PropertyName>SHAPE</ogc:PropertyName>';
+                xml += '<gml:Box srsName="urn:ogc:def:crs:EPSG::3857">';
+                xml += '<gml:coordinates>' + coords + '</gml:coordinates>';
+                xml += '</gml:Box>';
+                xml += '</ogc:BBOX>';
+                xml += '</ogc:Filter>';
+
+                // Define (WFS) parameters object.
+                var wfsParams = {
+                    key: apiKey,
+                    service: 'WFS',
+                    request: 'GetFeature',
+                    version: '2.0.0',
+                    typeNames: 'Sites_FunctionalSite',
+                    outputFormat: 'GEOJSON',
+                    srsName: 'urn:ogc:def:crs:EPSG::4326',
+                    filter: xml
+                };
+
+                var options = {
+                    query: {
+                        f: 'json'
+                    },
+                    responseType: 'json'
+                };
+
+                var url = getUrl(wfsParams);
+
+                return esriRequest(url, options).then(function (response) {
+                    const blob = new Blob([JSON.stringify(response.data)], {
+                        type: 'application/json'
+                    });
+                    const url = URL.createObjectURL(blob);
+                    return url;
+                });
+            }
+
+            /**
+             * Return URL with encoded parameters.
+             * @param {object} params - The parameters object to be encoded.
+             */
+            function getUrl(params) {
+                var encodedParameters = Object.keys(params)
+                    .map(
+                        (paramName) =>
+                            paramName + '=' + encodeURI(params[paramName])
+                    )
+                    .join('&');
+                return wfsServiceUrl + '?' + encodedParameters;
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="viewDiv"></div>
+</body>
+
+</html>
