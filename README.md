@@ -16,9 +16,7 @@ The code samples in this repo demonstrate how a developer using the ArcGIS API f
 
 To use the samples you first need to sign up to the service and generate an API key.
 
-Information about how to sign up can be found on the [OS Data Hub Plans & Pricing](https://osdatahub.os.uk/plans) page.
-
-See the [Getting Started Guide](https://osdatahub.os.uk/docs/wfs/gettingStarted) for instructions about how to set up an API Project and obtaining the API key.
+Information about how to sign up can be found on the [OS Data Hub Plans & Pricing](https://osdatahub.os.uk/plans) page. See the [Getting Started Guide](https://osdatahub.os.uk/docs/wfs/gettingStarted) for instructions about how to set up an API Project and obtaining the API key.
 
 In the sample code replace `INSERT_API_KEY_HERE` with your API key.
 
