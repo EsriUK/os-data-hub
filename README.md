@@ -12,6 +12,13 @@ The code samples in this repo demonstrate how a developer using the ArcGIS API f
 - [OS Vector Tile API](https://osdatahub.os.uk/docs/vts/overview) - highly customisable vector tiles.
 - [OS Features API](https://osdatahub.os.uk/docs/wfs/overview) - run spatial and attribute queries against a web feature service.
 
+## The code samples
+
+- [Switch between the different basemaps available from the Maps API]().
+- [Use client-side code to style the vector tiles provided by the Vector Tile API]().
+- [Query the OS Features API for all hospitals within the current map extent](https://github.com/EsriUK/os-data-hub/blob/master/os-features-api/wfs-hospitals.html).
+- [Query the OS Features API for all sites within the current map extent. Use smart mapping to classify sites and adapt the legend colours to the selected basemap](https://github.com/EsriUK/os-data-hub/blob/master/os-features-api/wfs-legend.html).
+
 ## How to use the samples
 
 To use the samples you first need to sign up to the service and generate an API key.
