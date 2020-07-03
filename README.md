@@ -1,6 +1,6 @@
 # os-data-hub
 
-os-data-hub contains examples of code for using [Ordnance Survey Data Hub APIs](https://osdatahub.os.uk/) with [ArcGIS API for Javascript v4](https://developers.arcgis.com/javascript/).
+os-data-hub contains sample code for using [Ordnance Survey Data Hub APIs](https://osdatahub.os.uk/) with [ArcGIS API for Javascript v4](https://developers.arcgis.com/javascript/).
 
 ## What is the OS Data Hub?
 
