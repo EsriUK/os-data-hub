@@ -28,17 +28,18 @@
     </style>
     <script src="https://js.arcgis.com/4.15/"></script>
     <script>
-        require([
-            "esri/Map",
-            "esri/views/MapView",
-            "esri/layers/VectorTileLayer",
-            "esri/config",
-            "dojo/domReady!",
-        ], function (Map, MapView, VectorTileLayer, esriConfig) {
-            // Replace INSERT_API_KEY_HERE with your API key.
-            var apiKey = 'INSERT_API_KEY_HERE';
-            var serviceUrl = 'https://api.os.uk/maps/vector/v1/vts';
+        // Replace INSERT_API_KEY_HERE with your API key.
+        var apiKey = 'INSERT_API_KEY_HERE';
+        var serviceUrl = 'https://api.os.uk/maps/vector/v1/vts';
+        var map, view;
 
+        require([
+            'esri/Map',
+            'esri/views/MapView',
+            'esri/layers/VectorTileLayer',
+            'esri/config',
+            'dojo/domReady!'
+        ], function (Map, MapView, VectorTileLayer, esriConfig) {
             // Add the 'key' and 'srs' options to the request URL before it is sent.
             esriConfig.request.interceptors.push({
                 urls: serviceUrl,
@@ -48,37 +49,36 @@
                     }
                     params.requestOptions.query.key = apiKey;
                     params.requestOptions.query.srs = 3857;
-                },
+                }
             });
 
-            // Create the vector tile layer and add to the view.
             var tileLayer = new VectorTileLayer({
-                url: serviceUrl,
+                url: serviceUrl
             });
+
+            map = new Map({
+                layers: [tileLayer]
+            });
+
             view = new MapView({
-                container: "viewDiv",
-                map: new Map({
-                    layers: [tileLayer],
-                }),
+                container: 'viewDiv',
+                map: map,
                 center: [-3.189, 55.952],
                 zoom: 14,
                 constraints: {
                     minZoom: 12,
                     maxZoom: 14,
-                    rotationEnabled: false,
-                },
+                    rotationEnabled: false
+                }
             });
 
-            // Once the view is ready access the paint-properties
-            // of the layer to change the fill colour of
-            // the woodland.
             view.when(function () {
                 var paintProperties = tileLayer.getPaintProperties(
-                    "OS/Woodland:3/Local/1"
+                    'OS/Woodland:3/Local/1'
                 );
-                paintProperties["fill-color"] = "rgba(39,163,66,0.8)";
+                paintProperties['fill-color'] = 'rgba(39,163,66,0.8)';
                 tileLayer.setPaintProperties(
-                    "OS/Woodland:3/Local/1",
+                    'OS/Woodland:3/Local/1',
                     paintProperties
                 );
             });

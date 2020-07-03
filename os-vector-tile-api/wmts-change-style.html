@@ -29,7 +29,7 @@
             opacity: 0.85;
         }
 
-        #layerToggle input[type='radio'] {
+        #layerToggle input[type="radio"] {
             margin-top: -1px;
             vertical-align: middle;
         }
@@ -48,18 +48,14 @@
     </style>
     <script src="https://js.arcgis.com/4.15/"></script>
     <script>
-        var apiKey = 'INSERT_API_KEY_HERE';
-        var serviceUrl = 'https://api.os.uk/maps/raster/v1/wmts';
-        var map, view;
-
         require([
-            'esri/Map',
-            'esri/views/MapView',
-            'esri/layers/WMTSLayer',
-            'esri/geometry/Point',
-            'esri/geometry/SpatialReference',
-            'esri/core/watchUtils',
-            'dojo/domReady!'
+            "esri/Map",
+            "esri/views/MapView",
+            "esri/layers/WMTSLayer",
+            "esri/geometry/Point",
+            "esri/geometry/SpatialReference",
+            "esri/core/watchUtils",
+            "dojo/domReady!",
         ], function (
             Map,
             MapView,
@@ -68,41 +64,42 @@
             SpatialReference,
             watchUtils
         ) {
+            // Replace INSERT_API_KEY_HERE with your API key.
+            var apiKey = "INSERT_API_KEY_HERE";
+            var serviceUrl = "https://api.os.uk/maps/raster/v1/wmts";
+
+            // Create the wmts layer and add to the view.
             var tileLayer = new WMTSLayer({
                 url: serviceUrl,
-                serviceMode: 'KVP',
+                serviceMode: "KVP",
                 activeLayer: {
-                    id: 'Light_27700'
+                    id: "Light_27700",
                 },
                 customParameters: {
-                    key: apiKey
-                }
+                    key: apiKey,
+                },
             });
-
-            map = new Map({
-                layers: [tileLayer]
-            });
-
-            view = new MapView({
-                container: 'viewDiv',
-                map: map,
+            var view = new MapView({
+                container: "viewDiv",
+                map: new Map({
+                    layers: [tileLayer],
+                }),
                 scale: 15392,
                 center: new Point({
                     x: 325920,
                     y: 673875,
-                    spatialReference: new SpatialReference({ wkid: 27700 })
+                    spatialReference: new SpatialReference({ wkid: 27700 }),
                 }),
                 constraints: {
                     minScale: 3386450,
                     maxScale: 6614,
-                    rotationEnabled: false
-                }
+                    rotationEnabled: false,
+                },
             });
 
             // Add an 'onclick' handler for the radio buttons.
-            var layerList = document.getElementById('layerToggle');
-            var inputs = layerList.getElementsByTagName('input');
-
+            var layerList = document.getElementById("layerToggle");
+            var inputs = layerList.getElementsByTagName("input");
             for (var i = 0; i < inputs.length; i++) {
                 inputs[i].onclick = switchLayer;
             }
@@ -113,7 +110,7 @@
              */
             function switchLayer(layer) {
                 var layerId = layer.target.id;
-                tileLayer.activeLayer.id = layerId + '_27700';
+                tileLayer.activeLayer.id = layerId + "_27700";
                 tileLayer.refresh();
             }
         });
