@@ -23,3 +23,7 @@ In the sample code replace `INSERT_API_KEY_HERE` with your API key.
 ## Further resources and examples
 
 The OS Data Hub provides detailed [documentation](https://osdatahub.os.uk/docs) and [examples](https://labs.os.uk/public/os-data-hub-examples/) about all three services.
+
+## License
+
+This project uses the following license: [Apache License 2.0](https://github.com/EsriUK/os-data-hub/blob/master/LICENSE).
