@@ -8,7 +8,7 @@ The Ordnance Survey Data Hub is a collection of APIs that provide access to a ra
 
 The code samples included in this repo demonstrate how a developer using the ArcGIS API for JavaScript v4 can get started with three of the APIs:
 
-- [OS Maps API](https://osdatahub.os.uk/docs/wmts/overview) - access basemaps via OGC standard WMTS or RESTful ZXY.
+- [OS Maps API](https://osdatahub.os.uk/docs/wmts/overview) - access raster tiles via OGC standard WMTS or RESTful ZXY.
 - [OS Vector Tile API](https://osdatahub.os.uk/docs/vts/overview) - highly customisable vector tiles.
 - [OS Features API](https://osdatahub.os.uk/docs/wfs/overview) - run spatial and attribute queries against a web feature service.
 
