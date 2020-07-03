@@ -18,7 +18,7 @@ To use the samples you first need to sign up to the service and generate an API 
 
 Information about how to sign up can be found on the [OS Data Hub Plans & Pricing](https://osdatahub.os.uk/plans) page.
 
-See the [Getting Started Guide](https://osdatahub.os.uk/docs/wfs/gettingStarted) for instructions on setting up an API Project and obtaining the API key.
+See the [Getting Started Guide](https://osdatahub.os.uk/docs/wfs/gettingStarted) for instructions about how to set up an API Project and obtaining the API key.
 
 In the sample code replace `INSERT_API_KEY_HERE` with your API key.
 
