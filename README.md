@@ -16,7 +16,7 @@ The code samples included in this repo demonstrate how a developer using the Arc
 
 To use the APIs in your apps you first need to sign up for the service. Information about how to do this can be found on the [OS Data Hub Plans & Pricing](https://osdatahub.os.uk/plans) page. See the [getting started guide](https://osdatahub.os.uk/docs/wfs/gettingStarted) for more information on setting up an API Project and obtaining a API key for use in your applications.
 
-Each sample contains all the code required to work. You just need to replace the `INSERT_API_KEY_HERE` text with your API key.
+To get the samples to work replace the `INSERT_API_KEY_HERE` text with your API key.
 
 ## Further resources and examples
 
